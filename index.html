@@ -208,7 +208,7 @@
         </div>
       </div>
     </div>
-    
+
     <script>
         var AfterSchoolClub = new Vue({
           el: "#app",
@@ -388,3 +388,124 @@
               );
             },
           },
+          methods: {
+          async fetchActivities() {
+            try {
+              const response = await fetch(
+                "http://localhost:3000/collection/activities"
+              );
+              if (!response.ok) {
+                throw new Error(
+                  "Network response was not ok " + response.statusText
+                );
+              }
+              const data = await response.json();
+              console.log("Fetched products:", data); // Debugging log
+              this.products = data || [];
+            } catch (error) {
+              console.error("Error fetching activities:", error);
+            }
+          },
+          filterProducts() {
+            console.log("Search triggered for query:", this.searchQuery);
+          },
+          canAddToCart(product) {
+            return product.AvailableInventory > 0;
+          },
+          addToCart(product) {
+            console.log("Adding to cart:", product); // Debugging log
+            if (this.canAddToCart(product)) {
+              this.cart.push(product);
+              product.AvailableInventory--;
+              this.cartitemcount = this.cart.length;
+              this.calculateTotalPrice();
+              console.log("Cart:", this.cart); // Debugging log
+            }
+          },
+          removeFromCart(index) {
+            const product = this.cart[index];
+            product.AvailableInventory++;
+            this.cart.splice(index, 1);
+            this.cartitemcount = this.cart.length;
+            this.calculateTotalPrice();
+          },
+          calculateTotalPrice() {
+            this.totalPrice = this.cart.reduce(
+              (sum, item) => sum + item.price,
+              0
+            );
+          },
+          toggleCheckout() {
+            this.checkoutPage = !this.checkoutPage;
+          },
+          async submitOrder() {
+            try {
+              const response = await fetch(
+                "http://localhost:3000/collection/orders",
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    firstName: this.order.firstName,
+                    lastName: this.order.lastName,
+                    address: this.order.address,
+                    city: this.order.city,
+                    state: this.order.state,
+                    zip: this.order.zip,
+                    phone: this.order.phone,
+                    gift: this.order.gift,
+                    method: this.order.method,
+                    cart: this.cart,
+                  }),
+                }
+              );
+
+              const data = await response.json();
+
+              if (response.ok) {
+                this.showModal = true; 
+                this.popupMessage = "Your order has been successfully submitted!";
+                this.showPopup = true; // Show the popup message
+                setTimeout(() => {
+                  this.showPopup = false; 
+                }, 3000);
+              } else {
+                this.showPopup = true;
+                this.popupMessage =
+                  "Failed to place order: " + (data.msg || "Unknown error");
+                setTimeout(() => {
+                  this.showPopup = false; 
+                }, 3000);
+              }
+
+              // Clear cart and reset order details
+              this.cart = [];
+              this.cartitemcount = 0;
+              this.totalPrice = 0;
+            } catch (error) {
+              console.error("Error placing order:", error);
+              this.showPopup = true;
+              this.popupMessage = "Error placing order.";
+              setTimeout(() => {
+                this.showPopup = false; 
+              }, 3000);
+            }
+          },
+          validateName(field) {
+            const value = this.order[field];
+            this.order[field] = value.replace(/\d/g, "");
+          },
+          closeModal() {
+            this.showModal = false;
+            this.checkoutPage = false;
+          },
+        },
+        created() {
+          this.fetchActivities();
+        },
+      });
+    </script>
+  </body>
+</html>
