@@ -393,7 +393,7 @@
           async fetchActivities() {
             try {
               const response = await fetch(
-                "http://localhost:3000/collection/activities"
+                "https://cst3144-back-end.onrender.com/collection/activities"
               );
               if (!response.ok) {
                 throw new Error(
@@ -442,7 +442,7 @@
           async submitOrder() {
             try {
               const response = await fetch(
-                "http://localhost:3000/collection/orders",
+                "https://cst3144-back-end.onrender.com/collection/orders",
                 {
                   method: "POST",
                   headers: {
