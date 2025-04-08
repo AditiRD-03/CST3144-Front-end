@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+  </head>
+
+  <header>
+    <h1>After School Lessons</h1>
+  </header>
+
+  <body>
+    <div id="app">
+      <nav class="navbar">
+        <div class="nav-content">
+          <span class="logo-img"><img src="images/logo.jpeg" alt="" /></span>
+          <h1 class="site-name" v-text="sitename"></h1>
+
+          <div id="app">
+            <nav class="navbar">
+                <div class="search-bar" v-if="!showCheckout">
+                    <input type="text" v-model="searchQuery" placeholder="Search...">
+                </div>
+          </div>
+
+          <button
+            class="checkout-button"
+            v-if="cartitemcount > 0"
+            v-on:click="toggleCheckout"
+          >
+            <i class="fa-solid fa-cart-shopping"></i>
+            {{ checkoutPage ? 'Hide Checkout' : 'Checkout (' + cartitemcount +
+            ')' }}
+          </button>
+        </div>
+      </nav>
+      <br />
+
+      <div class="filter-section" v-if="!checkoutPage">
+        <label for="sort-by">Sort By:</label>
+        <select v-model="sortCategory">
+          <option value="price">Price</option>
+          <option value="location">Location</option>
+          <option value="availability">Availability</option>
+          <option value="name">Name</option>
+        </select>
+        <select v-model="sortOrder">
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+      </div>
+
+      <main v-if="!checkoutPage">
+        <div class="products-grid">
+          <div
+            v-for="product in sortedProducts"
+            :key="product.id"
+            class="product-item"
+          >
+            <h2 v-text="product.title"></h2>
+            <figure>
+              <img class="image-1" v-bind:src="product.image" />
+            </figure>
+            <h2 v-text="product.subject"></h2>
+            <p v-text="'Location: ' + product.location"></p>
+            <p>Price: {{ product.price }} AED</p>
+            <p>Available Items: {{ product.AvailableInventory }}</p>
+            <button
+              class="addToCart"
+              v-on:click="addToCart(product)"
+              v-if="canAddToCart(product)"
+            >
+              Add to cart
+            </button>
+            <button disabled v-else>Add to cart</button>
+            <span v-if="product.AvailableInventory <= 0">All out!</span>
+            <span v-else-if="product.AvailableInventory < 5">
+              Only {{ product.AvailableInventory }} left!
+            </span>
+          </div>
+        </div>
+      </main>
