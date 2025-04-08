@@ -147,3 +147,64 @@
             </p>
           </div>
           
+          <div class="order-summary">
+            <h3>Order Details</h3>
+            <p><strong>First Name:</strong> {{ order.firstName }}</p>
+            <p><strong>Last Name:</strong> {{ order.lastName }}</p>
+            <p><strong>Address:</strong> {{ order.address }}</p>
+            <p><strong>City:</strong> {{ order.city }}</p>
+            <p><strong>State:</strong> {{ order.state }}</p>
+            <p><strong>Zip/Postal Code:</strong> {{ order.zip }}</p>
+            <p><strong>Phone:</strong> {{ order.phone }}</p>
+            <p><strong>Gift:</strong> {{ order.gift ? 'Yes' : 'No' }}</p>
+            <p><strong>Method:</strong> {{ order.method }}</p>
+          </div>
+
+          <div class="cart-summary">
+            <h3>Cart Summary</h3>
+            <div v-for="(item, index) in cart" :key="item.id" class="item">
+              <span>{{ item.subject }} - Price: {{ item.price }} AED</span>
+              <button class="delete-button" @click="removeFromCart(index)">
+                Delete
+              </button>
+            </div>
+            <hr />
+            <p>
+              <strong>Total Price:</strong>
+              <strong>{{ totalPrice }} AED</strong>
+            </p>
+            <button
+              class="placeOrder"
+              v-if="isOrderComplete && checkoutPage"
+              v-on:click="submitOrder"
+            >
+              Place Order
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="showPopup" class="popup">{{ popupMessage }}</div>
+
+      <!-- Add Modal Popup -->
+      <div v-if="showModal" class="modal-overlay">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2>Order Confirmation</h2>
+            <button class="close-modal" @click="closeModal">×</button>
+          </div>
+          <div class="modal-body">
+            <p>Your order has been placed successfully!</p>
+            <div class="order-details">
+              <h3>Order Details</h3>
+              <p><strong>Order Number:</strong> #{{ Math.floor(Math.random() * 1000000) }}</p>
+              <p><strong>Total Amount:</strong> {{ totalPrice }} AED</p>
+              <p><strong>Items:</strong> {{ cartitemcount }}</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button class="modal-button" @click="closeModal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
